@@ -12,7 +12,7 @@ enum BracketResponse {
     ErrorIndex(usize)
 }
 
-#[derive(PartialEq, Eq)]
+#[derive(PartialEq, Eq, Debug)]
 enum BracketType {
     Parenthesis,
     Square,
@@ -21,14 +21,12 @@ enum BracketType {
 
 
 fn check_brackets(text: &str) -> BracketResponse {
-    let brackets: [char; 6] = ['{', '}', '[', ']', '(', ')'];
-
     // keep track of the indices of all unclosed bracket of each type, when a closing bracket
     // is found the last opening bracket will be removed
     let mut unclosed_brackets: Vec<(BracketType, usize)> = Vec::new();
 
     // check brackets are closed correctly
-    for (index, character) in text.chars().enumerate().filter(|(_, character)| brackets.contains(&character)) {
+    for (index, character) in text.chars().enumerate() {
         let is_opening: bool;
         let current_bracket_type: BracketType;
 
@@ -57,7 +55,7 @@ fn check_brackets(text: &str) -> BracketResponse {
                 is_opening = false;
                 current_bracket_type = BracketType::Curly
             }
-	        _ => panic!("should be impossible")
+	        _ => continue
         }
 
         if is_opening { // opening bracket
@@ -68,7 +66,7 @@ fn check_brackets(text: &str) -> BracketResponse {
             match unclosed_brackets.pop() {
                 Some((bracket_type, _)) => {
                     if bracket_type != current_bracket_type {
-                        return BracketResponse::ErrorIndex(index + 1)
+                        return BracketResponse::ErrorIndex(index + 1);
                     }
                 }
                 None => {
